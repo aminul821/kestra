@@ -88,7 +88,7 @@ public class Assert extends Task implements RunnableTask<VoidOutput> {
                 try {
                     String renderer = runContext.render(s);
 
-                    if (TruthUtils.isFalsy(renderer)) {
+                    if (renderer == null || TruthUtils.isFalsy(renderer)) {
                         runContext.logger().error("Assertion `{}` failed!", s, renderer);
                         failed.incrementAndGet();
                     } else {

@@ -1,6 +1,7 @@
 package io.kestra.plugin.core.execution;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -82,6 +83,21 @@ public class AssertTest {
 
         assertThat(runContext.metrics().stream().filter(e -> e.getName().equals("success")).findFirst().orElseThrow().getValue()).isEqualTo(3d);
         assertThat(runContext.metrics().stream().filter(e -> e.getName().equals("failed")).findFirst().orElseThrow().getValue()).isEqualTo(2d);
+    }
+
+    @Test
+    void shouldFailWhenConditionIsNull() {
+        Assert task = Assert.builder()
+            .id(IdUtils.create())
+            .type(Assert.class.getName())
+            .conditions(Arrays.asList("{{ 42 == 42 }}", null))
+            .build();
+
+        RunContext runContext = TestsUtils.mockRunContext(runContextFactory, task, Map.of());
+
+        Exception exception = assertThrows(Exception.class, () -> task.run(runContext));
+
+        assertThat(exception.getMessage()).contains("1 assertion failed");
     }
 
     @Test
